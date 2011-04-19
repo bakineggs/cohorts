@@ -46,30 +46,23 @@
                     },
                     storageAdapter: {
                         nameSpace: 'storageAdapter_cohorts',
-                        trackEvent: function(category, action, opt_label, opt_value) {
+                        onInitialize: function(inTest, testName, cohort) {
+                            if(!inTest) return;
+
                             if(window['_gaq']) {
-                                _gaq.push(['_trackEvent', category, action, opt_label, opt_value]);
+                                _gaq.push(['_trackEvent', this.nameSpace, testName, cohort + ' | Total']);
                             } else {
                                 throw(" _gaq object not found: It looks like you haven't correctly setup the asynchronous Google Analytics tracking code, and you are using the default GoogleAnalyticsAdapter.");
                             }
-                        },
-                        onInitialize: function(inTest, testName, cohort) {
-                            if(inTest) {
-                                this.trackEvent(this.nameSpace, testName, cohort + ' | Total');
+
+                            if(window['console']) {
+                                if(inTest)
+                                    console.log('in test ' + testName + ', assigned to ' + cohort);
+                                else
+                                    console.log('not in test ' + testName);
                             }
-                        },
-                        onEvent: function(testName, cohort, eventName) {
-                            this.trackEvent(this.nameSpace, testName, cohort + ' | ' + eventName);
                         }
                     }
-                });
-            
-                $('#big').click(function() {
-                    header_test.event('Clicked on Big Header');
-                });
-            
-                $('#small').click(function() {
-                    header_test.event('Clicked on Small Header');
                 });
             });
         </script>
