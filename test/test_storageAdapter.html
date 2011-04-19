@@ -44,9 +44,11 @@
                         },
                         small: {},
                     },
-                    storageAdapter: {
+                    storageAdapters: [{
                         nameSpace: 'storageAdapter_cohorts',
                         trackEvent: function(category, action, opt_label, opt_value) {
+                            if(window['console']) console.log('event on the first adapter');
+
                             if(window['_gaq']) {
                                 _gaq.push(['_trackEvent', category, action, opt_label, opt_value]);
                             } else {
@@ -61,7 +63,26 @@
                         onEvent: function(testName, cohort, eventName) {
                             this.trackEvent(this.nameSpace, testName, cohort + ' | ' + eventName);
                         }
-                    }
+                    }, {
+                        nameSpace: 'storageAdapter_cohorts2',
+                        trackEvent: function(category, action, opt_label, opt_value) {
+                            if(window['console']) console.log('event on the second adapter');
+
+                            if(window['_gaq']) {
+                                _gaq.push(['_trackEvent', category, action, opt_label, opt_value]);
+                            } else {
+                                throw(" _gaq object not found: It looks like you haven't correctly setup the asynchronous Google Analytics tracking code, and you are using the default GoogleAnalyticsAdapter.");
+                            }
+                        },
+                        onInitialize: function(inTest, testName, cohort) {
+                            if(inTest) {
+                                this.trackEvent(this.nameSpace, testName, cohort + ' | Total');
+                            }
+                        },
+                        onEvent: function(testName, cohort, eventName) {
+                            this.trackEvent(this.nameSpace, testName, cohort + ' | ' + eventName);
+                        }
+                    }]
                 });
             
                 $('#big').click(function() {
